@@ -1,4 +1,4 @@
-class TokenResponseDto {
+export class TokenResponseDto {
   accessToken: string;
   refreshToken: string;
 
