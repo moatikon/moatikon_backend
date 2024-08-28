@@ -14,7 +14,7 @@ export const dbUsername: string = dbConfig.username;
 export const dbPassword: string = dbConfig.password;
 export const dbSynchronize: boolean = dbConfig.synchronize;
 
-export const jwtAccessExe: string = jwtConfig.accessExe;
-export const jwtRefreshExe: string = jwtConfig.refreshExe;
+export const jwtAccessExe: number = jwtConfig.accessExe;
+export const jwtRefreshExe: number = jwtConfig.refreshExe;
 export const jwtSecret: string = jwtConfig.secret;
 export const jwtReSecret: string = jwtConfig.reSecret;
