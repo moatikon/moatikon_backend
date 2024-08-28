@@ -3,9 +3,7 @@ import { Strategy, ExtractJwt } from "passport-jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "src/user/user.entity";
 import { Repository } from "typeorm";
-
-import * as config from "config";
-const jwtConfig = config.get("jwt");
+import { jwtSecret } from "src/configs/configs";
 
 export class JwtAccessStrategy extends PassportStrategy(Strategy, "access") {
   constructor(
@@ -14,7 +12,7 @@ export class JwtAccessStrategy extends PassportStrategy(Strategy, "access") {
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), //Request Header에서 Bearer auth 뽑아내기
-      secretOrKey: jwtConfig.secret,
+      secretOrKey: jwtSecret,
     });
   }
 

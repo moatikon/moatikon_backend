@@ -3,9 +3,7 @@ import { Strategy } from "passport-jwt";
 import { UserEntity } from "src/user/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm/repository/Repository";
-
-import * as config from "config";
-const jwtConfig = config.get("jwt");
+import { jwtReSecret } from "src/configs/configs";
 
 export class JwtRefreshStrategy extends PassportStrategy(Strategy, "refresh") {
   constructor(
@@ -14,7 +12,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, "refresh") {
   ) {
     super({
       jwtFromRequest: (req) => req.headers["RE-TOKEN"],
-      secretOrKey: jwtConfig.re_secret,
+      secretOrKey: jwtReSecret,
     });
   }
 
