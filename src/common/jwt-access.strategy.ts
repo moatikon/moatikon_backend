@@ -4,6 +4,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "src/user/user.entity";
 import { Repository } from "typeorm";
 import { jwtSecret } from "src/configs/configs";
+import { NotFoundException } from "@nestjs/common";
 
 export class JwtAccessStrategy extends PassportStrategy(Strategy, "access") {
   constructor(
@@ -17,12 +18,10 @@ export class JwtAccessStrategy extends PassportStrategy(Strategy, "access") {
   }
 
   async validate(payload): Promise<UserEntity> {
-    const { userid, email } = payload;
+    const { userid } = payload;
+    const user: UserEntity = await this.userRepository.findOneBy({ userid });
 
-    const user: UserEntity = await this.userRepository.findOneBy({
-      userid,
-      email,
-    });
+    if(!user) throw new NotFoundException("존재하지 않는 유저입니다.");
 
     return user;
   }
