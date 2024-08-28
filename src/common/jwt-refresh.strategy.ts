@@ -9,17 +9,17 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, "refresh") {
   constructor(
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>
-  ) {
+  ) {    
     super({
-      jwtFromRequest: (req) => req.headers["RE-TOKEN"],
+      jwtFromRequest: (req) => req.headers["re-token"],
       secretOrKey: jwtReSecret,
     });
   }
 
-  async validate(payload): Promise<UserEntity> {
+  async validate(payload): Promise<UserEntity> {    
     const { userid } = payload;
-
     const user: UserEntity = await this.userRepository.findOneBy({ userid });
+    
     return user;
   }
 }

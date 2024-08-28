@@ -56,4 +56,16 @@ export class UserService {
       "등록되지 않은 이메일이거나 비밀번호를 잘못 입력했습니다."
     );
   }
+
+  async reissue(userParam: UserEntity): Promise<TokenResponseDto> {
+    const { userid, email } = userParam;
+
+    const accessToken: string = this.tokenUtil.generateAccessToken(
+      userid,
+      email
+    );
+    const refreshToken: string = this.tokenUtil.generateRefreshToken(userid);
+
+    return new TokenResponseDto(accessToken, refreshToken);
+  }
 }
