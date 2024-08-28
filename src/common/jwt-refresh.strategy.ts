@@ -1,19 +1,27 @@
 import { PassportStrategy } from "@nestjs/passport";
-import { Strategy, ExtractJwt } from "passport-jwt";
+import { Strategy } from "passport-jwt";
+import { UserEntity } from "src/user/user.entity";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm/repository/Repository";
 
 import * as config from "config";
 const jwtConfig = config.get("jwt");
 
 export class JwtRefreshStrategy extends PassportStrategy(Strategy, "refresh") {
-  constructor() {
+  constructor(
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>
+  ) {
     super({
       jwtFromRequest: (req) => req.headers["RE-TOKEN"],
       secretOrKey: jwtConfig.re_secret,
     });
   }
 
-  validate(payload) {
+  async validate(payload): Promise<UserEntity> {
     const { userid } = payload;
-    return { userid };
+
+    const user: UserEntity = await this.userRepository.findOneBy({ userid });
+    return user;
   }
 }
