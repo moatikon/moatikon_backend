@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { TikonCategory } from "./dto/tikon-category.enum";
+import { UserEntity } from "src/user/user.entity";
 
 @Entity({ name: "tikon" })
 export class TikonEntity {
@@ -23,4 +24,7 @@ export class TikonEntity {
 
   @Column()
   discount: number;
+
+  @ManyToOne((type) => UserEntity, (user) => user.tikons, { eager: false })
+  user: UserEntity;
 }
