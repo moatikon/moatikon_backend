@@ -11,6 +11,7 @@ import { UserRequestDto } from "./dto/request/user-request.dto";
 
 import * as bcrypt from "bcryptjs";
 import { TokenResponseDto } from "./dto/response/token-response.dto";
+import { DuplicationUserException } from "src/exception/custom/duplication-user.exception";
 
 @Injectable()
 export class UserService {
@@ -24,7 +25,7 @@ export class UserService {
     const { email, password } = userRequestDto;
     let user: UserEntity = await this.userRepository.findOneBy({ email });
 
-    if (user) throw new BadRequestException("이미 사용하고 있는 유저입니다.");
+    if (user) throw new DuplicationUserException();
 
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
