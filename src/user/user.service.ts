@@ -12,6 +12,7 @@ import { UserRequestDto } from "./dto/request/user-request.dto";
 import * as bcrypt from "bcryptjs";
 import { TokenResponseDto } from "./dto/response/token-response.dto";
 import { DuplicationUserException } from "src/exception/custom/duplication-user.exception";
+import { LoginFailException } from "src/exception/custom/login-fail.exception";
 
 @Injectable()
 export class UserService {
@@ -53,9 +54,7 @@ export class UserService {
       return new TokenResponseDto(accessToken, refreshToken);
     }
 
-    throw new UnauthorizedException(
-      "등록되지 않은 이메일이거나 비밀번호를 잘못 입력했습니다."
-    );
+    throw new LoginFailException();
   }
 
   async reissue(userParam: UserEntity): Promise<TokenResponseDto> {
