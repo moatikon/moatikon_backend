@@ -4,6 +4,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { typeORMConfig } from "./configs/type-orm.config";
 import { TokenUtilModule } from "./util/token/token-util.module";
 import { CommonModule } from "./common/common.module";
+import { TikonModule } from './tikon/tikon.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { CommonModule } from "./common/common.module";
     UserModule,
     TokenUtilModule,
     CommonModule,
+    TikonModule,
   ],
   controllers: [],
   providers: [],
