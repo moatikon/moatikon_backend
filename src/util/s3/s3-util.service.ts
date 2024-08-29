@@ -1,4 +1,8 @@
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import {
+  DeleteObjectsCommand,
+  PutObjectCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 import { Injectable } from "@nestjs/common";
 import {
   s3AccessKey,
@@ -39,5 +43,18 @@ export class S3UtilService {
 
     this.s3Client.send(commend);
     return `https://s3.${s3Region}.amazonaws.com/${s3BucketName}/${filename}.${ext}`;
+  }
+
+  async imageDeleteToS3(image: string): Promise<void> {
+    const tikonImageKey = image.split("/")[4];
+
+    console.log(tikonImageKey);
+
+    const commend = new DeleteObjectsCommand({
+      Bucket: s3BucketName,
+      Delete: { Objects: [{ Key: tikonImageKey }] },
+    });
+
+    await this.s3Client.send(commend);
   }
 }

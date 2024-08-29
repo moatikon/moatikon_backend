@@ -1,7 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
+  Param,
   Post,
   Req,
   UploadedFile,
@@ -24,18 +28,27 @@ import { TikonEntity } from "./tikon.entity";
 export class TikonController {
   constructor(private tikonService: TikonService) {}
 
+  @Get()
+  getAllMyTikons(@GetUser() user: UserEntity): Promise<TikonEntity[]> {
+    return this.tikonService.getAllMyTikons(user);
+  }
+
   @Post()
   @UseInterceptors(FileInterceptor("image"))
   createTikon(
     @GetUser() user: UserEntity,
-    @UploadedFile("file") image: Express.Multer.File,
+    @UploadedFile() image: Express.Multer.File,
     @Body() createTikonDto: CreateTikonDto
   ): Promise<void> {
     return this.tikonService.createTikon(user, image, createTikonDto);
   }
 
-  @Get()
-  getAllMyTikons(@GetUser() user: UserEntity): Promise<TikonEntity[]> {
-    return this.tikonService.getAllMyTikons(user);
+  @Delete("/:id")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  deleteTikon(
+    @GetUser() user: UserEntity,
+    @Param("id") id: number
+  ): Promise<void> {
+    return this.tikonService.deleteTikon(user, id);
   }
 }

@@ -5,6 +5,7 @@ import { Repository } from "typeorm";
 import { UserEntity } from "src/user/user.entity";
 import { CreateTikonDto } from "./dto/create-tikon.dto";
 import { S3UtilService } from "src/util/s3/s3-util.service";
+import { NotPostOwnerException } from "src/exception/custom/not-post-owner.exception";
 
 @Injectable()
 export class TikonService {
@@ -39,5 +40,14 @@ export class TikonService {
     });
 
     await this.tikonRepository.save(tikon);
+  }
+
+  async deleteTikon(user: UserEntity, id: number): Promise<void>{
+    const tikon: TikonEntity = await this.tikonRepository.findOneBy({ id, user });
+
+    if(!tikon) throw new NotPostOwnerException();
+
+    await this.s3Util.imageDeleteToS3(tikon.image);
+    await this.tikonRepository.delete({ id, user });
   }
 }
