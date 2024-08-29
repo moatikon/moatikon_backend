@@ -6,6 +6,7 @@ import {
   s3Region,
   s3SecretAccessKey,
 } from "src/configs/configs";
+import { v1 as uuid } from "uuid";
 
 @Injectable()
 export class S3UtilService {
@@ -17,17 +18,26 @@ export class S3UtilService {
     },
   });
 
-  async imageUploadToS3(file: Express.Multer.File) {
-    console.log(file.mimetype);
+  #base64Encodeing(originalname: string): string {
+    const buffer = Buffer.from(originalname + uuid(), "utf-8");
+    const encoded = buffer.toString("base64");
+
+    return encoded;
+  }
+
+  async imageUploadToS3(image: Express.Multer.File): Promise<string> {
+    const filename = this.#base64Encodeing(image.originalname);
+    const ext: string = image.mimetype.split("/")[1];
 
     const commend = new PutObjectCommand({
       Bucket: s3BucketName,
-      Key: file.filename,
-      Body: file.buffer,
-      ACL: "public-read",
-      ContentType: file.mimetype,
+      Key: `${filename}.${ext}`,
+      Body: image.buffer,
+      ACL: "public-read-write",
+      ContentType: image.mimetype,
     });
 
     this.s3Client.send(commend);
+    return `https://s3.${s3Region}.amazonaws.com/${s3BucketName}/${filename}.${ext}`;
   }
 }
