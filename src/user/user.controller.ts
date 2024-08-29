@@ -12,7 +12,6 @@ import {
 import { UserService } from "./user.service";
 import { UserRequestDto } from "./dto/request/user-request.dto";
 import { TokenResponseDto } from "./dto/response/token-response.dto";
-import { AuthGuard } from "@nestjs/passport";
 import { GetUser } from "src/common/get-user.decorator";
 import { UserEntity } from "./user.entity";
 import { AuthRefreshGuard } from "src/common/auth-refresh.guard";
