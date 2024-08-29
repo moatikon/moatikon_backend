@@ -15,6 +15,7 @@ import { TokenResponseDto } from "./dto/response/token-response.dto";
 import { AuthGuard } from "@nestjs/passport";
 import { GetUser } from "src/common/get-user.decorator";
 import { UserEntity } from "./user.entity";
+import { AuthRefreshGuard } from "src/common/auth-refresh.guard";
 
 @Controller("auth")
 @UsePipes(ValidationPipe)
@@ -34,7 +35,7 @@ export class UserController {
   }
 
   @Get("/re-issue")
-  @UseGuards(AuthGuard("refresh"))
+  @UseGuards(AuthRefreshGuard)
   @HttpCode(HttpStatus.OK)
   reissue(@GetUser() user: UserEntity): Promise<TokenResponseDto> {
     return this.userService.reissue(user);
