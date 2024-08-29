@@ -1,4 +1,4 @@
-import { ArgumentsHost, Catch, ExceptionFilter } from "@nestjs/common";
+import { ArgumentsHost, Catch, ExceptionFilter, Logger } from "@nestjs/common";
 
 import { format } from "date-fns";
 
@@ -10,8 +10,8 @@ export class BaseExceptionFilter implements ExceptionFilter {
     const req = context.getRequest();
     const res = context.getResponse();
 
-    console.log(exception);
-    
+    Logger.error(exception);
+
     res.status(exception.statusCode || 400).json({
       message: exception.response.message,
       statusCode: exception.statusCode || 400,
