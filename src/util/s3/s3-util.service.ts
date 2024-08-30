@@ -24,7 +24,7 @@ export class S3UtilService {
 
   #base64Encodeing(originalname: string): string {
     const buffer = Buffer.from(originalname + uuid(), "utf-8");
-    const encoded = buffer.toString("base64");
+    const encoded = buffer.toString("base64url");
 
     return encoded;
   }
