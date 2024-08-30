@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty } from "class-validator";
+import { IsEnum, IsNotEmpty, Matches } from "class-validator";
 import { TikonCategory } from "./tikon-category.enum";
 import { Transform } from "class-transformer";
 
@@ -14,6 +14,9 @@ export class CreateTikonDto {
   @IsNotEmpty({ message: "카테고리를 추가해주세요" })
   category: TikonCategory;
 
+  @Matches(/^\d{4}-\d{2}-\d{2}$/, {
+    message: "만료일은 yyyy-MM-dd 형식이어야 합니다.",
+  })
   @IsNotEmpty({ message: "만료일을 추가해주세요" })
   finishedTikon: string;
 
