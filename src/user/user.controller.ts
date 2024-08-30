@@ -12,9 +12,9 @@ import {
 import { UserService } from "./user.service";
 import { UserRequestDto } from "./dto/request/user-request.dto";
 import { TokenResponseDto } from "./dto/response/token-response.dto";
-import { GetUser } from "src/common/get-user.decorator";
+import { GetUser } from "src/common/decorator/get-user.decorator";
 import { UserEntity } from "./user.entity";
-import { AuthRefreshGuard } from "src/common/auth-refresh.guard";
+import { AuthRefreshGuard } from "src/common/guard/auth-refresh.guard";
 
 @Controller("auth")
 @UsePipes(ValidationPipe)
