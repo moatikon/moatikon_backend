@@ -1,5 +1,6 @@
-import { IsNotEmpty } from "class-validator";
+import { IsEnum, IsNotEmpty } from "class-validator";
 import { TikonCategory } from "./tikon-category.enum";
+import { Transform } from "class-transformer";
 
 export class CreateTikonDto {
   @IsNotEmpty({ message: "가맹점명을 추가해주세요" })
@@ -8,6 +9,8 @@ export class CreateTikonDto {
   @IsNotEmpty({ message: "티콘에 이름을 추가해주세요" })
   tikonName: string;
 
+  @Transform(({ value }) => value.toUpperCase())
+  @IsEnum(TikonCategory, { message: "카테고리에 맞는 값을 입력해주세요" })
   @IsNotEmpty({ message: "카테고리를 추가해주세요" })
   category: TikonCategory;
 
