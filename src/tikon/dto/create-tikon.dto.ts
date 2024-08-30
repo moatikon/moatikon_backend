@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, Matches } from "class-validator";
+import { IsEnum, IsNotEmpty, Matches, Max, MAX, Min } from "class-validator";
 import { TikonCategory } from "./tikon-category.enum";
 import { Transform } from "class-transformer";
 
@@ -20,6 +20,9 @@ export class CreateTikonDto {
   @IsNotEmpty({ message: "만료일을 추가해주세요" })
   finishedTikon: string;
 
+  @Transform(({ value }) => Number(value))
+  @Min(10, { message: "할인율은 10% 미만으로 설정할 수 없어요." })
+  @Max(100, { message: "할인율은 100% 이상으로 설정할 수 없어요." })
   @IsNotEmpty({ message: "할인율을 추가해주세요" })
   discount: number;
 }
