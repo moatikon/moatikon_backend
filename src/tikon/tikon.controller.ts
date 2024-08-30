@@ -7,7 +7,6 @@ import {
   HttpStatus,
   Param,
   Post,
-  Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,

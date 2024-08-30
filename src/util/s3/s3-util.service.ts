@@ -48,8 +48,6 @@ export class S3UtilService {
   async imageDeleteToS3(image: string): Promise<void> {
     const tikonImageKey = image.split("/")[4];
 
-    console.log(tikonImageKey);
-
     const commend = new DeleteObjectsCommand({
       Bucket: s3BucketName,
       Delete: { Objects: [{ Key: tikonImageKey }] },
