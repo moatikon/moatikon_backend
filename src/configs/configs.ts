@@ -4,6 +4,7 @@ const serverConfig = config.get("server");
 const dbConfig = config.get("db");
 const jwtConfig = config.get("jwt");
 const s3Config = config.get("s3");
+const emailConfig = config.get("email");
 //--------------------
 export const serverPort: string = serverConfig.port;
 
@@ -25,3 +26,6 @@ export const s3BucketName: string = s3Config.bucketName;
 export const s3AccessKey: string = s3Config.accessKey;
 export const s3SecretAccessKey: string = s3Config.secretAccessKey;
 export const s3Arn: string = s3Config.arn;
+
+export const emailUser: string = emailConfig.user;
+export const emailPassword: string = emailConfig.password;
