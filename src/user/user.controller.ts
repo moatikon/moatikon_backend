@@ -39,4 +39,9 @@ export class UserController {
   reissue(@GetUser() user: UserEntity): Promise<TokenResponseDto> {
     return this.userService.reissue(user);
   }
+
+  @Post("/pw-code")
+  pwCode(@Body("email") email: string): Promise<void> {    
+    return this.userService.pwCode(email);
+  }
 }

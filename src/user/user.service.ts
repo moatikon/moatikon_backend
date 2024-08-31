@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "./user.entity";
 import { Repository } from "typeorm";
@@ -13,13 +9,16 @@ import * as bcrypt from "bcryptjs";
 import { TokenResponseDto } from "./dto/response/token-response.dto";
 import { DuplicationUserException } from "src/exception/custom/duplication-user.exception";
 import { LoginFailException } from "src/exception/custom/login-fail.exception";
+import { EmailUtilService } from "src/util/email/email-util-service";
+import { NotFoundUserException } from "src/exception/custom/not-found-user.exception";
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
-    private tokenUtil: TokenUtilService
+    private tokenUtil: TokenUtilService,
+    private emailUtil: EmailUtilService
   ) {}
 
   async signup(userRequestDto: UserRequestDto): Promise<void> {
@@ -67,5 +66,14 @@ export class UserService {
     const refreshToken: string = this.tokenUtil.generateRefreshToken(userid);
 
     return new TokenResponseDto(accessToken, refreshToken);
+  }
+
+  async pwCode(email: string): Promise<void> {
+    const user: UserEntity = await this.userRepository.findOneBy({ email });
+    if(!user) throw new NotFoundUserException();
+
+    const token = Math.floor(100000 + Math.random() * 900000).toString();
+
+    await this.emailUtil.sendEmail(user.email, token);
   }
 }
