@@ -7,7 +7,7 @@ import { SendEmailException } from "src/exception/custom/send-email.exception";
 export class EmailUtilService {
   constructor(private readonly mailerService: MailerService) {}
 
-  async sendEmail(email: string, token: string): Promise<void> {
+  async sendEmail(email: string, code: string): Promise<void> {
     
     this.mailerService
       .sendMail({
@@ -18,7 +18,7 @@ export class EmailUtilService {
 
         template: "./email",
         context: {
-          code: token,
+          code: code,
         },
       })
       .then((value) => console.log("success : ", value))

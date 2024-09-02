@@ -11,6 +11,8 @@ import { DuplicationUserException } from "src/exception/custom/duplication-user.
 import { LoginFailException } from "src/exception/custom/login-fail.exception";
 import { EmailUtilService } from "src/util/email/email-util-service";
 import { NotFoundUserException } from "src/exception/custom/not-found-user.exception";
+import { RedisUtilService } from "src/util/redis/redis-util.service";
+import { addMinutes, format } from "date-fns";
 
 @Injectable()
 export class UserService {
@@ -18,7 +20,8 @@ export class UserService {
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
     private tokenUtil: TokenUtilService,
-    private emailUtil: EmailUtilService
+    private emailUtil: EmailUtilService,
+    private redieUtil: RedisUtilService
   ) {}
 
   async signup(userRequestDto: UserRequestDto): Promise<void> {
@@ -70,10 +73,17 @@ export class UserService {
 
   async pwCode(email: string): Promise<void> {
     const user: UserEntity = await this.userRepository.findOneBy({ email });
-    if(!user) throw new NotFoundUserException();
+    if (!user) throw new NotFoundUserException();
 
-    const token = Math.floor(100000 + Math.random() * 900000).toString();
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
 
-    await this.emailUtil.sendEmail(user.email, token);
+    await this.emailUtil.sendEmail(user.email, code);
+    await this.redieUtil.set(
+      user.email,
+      JSON.stringify({
+        code: code,
+        ttl: addMinutes(Date.now(), 10).toISOString(),
+      })
+    );
   }
 }
