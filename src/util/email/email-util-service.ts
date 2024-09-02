@@ -1,6 +1,7 @@
 import { MailerService } from "@nestjs-modules/mailer";
 import { Injectable } from "@nestjs/common";
 import { emailUser } from "src/configs/configs";
+import { SendEmailException } from "src/exception/custom/send-email.exception";
 
 @Injectable()
 export class EmailUtilService {
@@ -21,6 +22,6 @@ export class EmailUtilService {
         },
       })
       .then((value) => console.log("success : ", value))
-      .catch((reason) => console.log("error : ", reason));
+      .catch((reason) => new SendEmailException());
   }
 }

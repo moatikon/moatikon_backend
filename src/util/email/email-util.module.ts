@@ -20,7 +20,7 @@ import { join } from "path";
         from: '"nest-modules" <modules@nestjs.com>',
       },
       template: {
-        dir: "/Users/ljyo2o9/Documents/Gitkra/moatikon_backend/src/util/email/templates/",
+        dir: "src/util/email/templates/",
         adapter: new HandlebarsAdapter(),
         options: {
           strict: true,
