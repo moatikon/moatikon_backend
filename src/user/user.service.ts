@@ -84,26 +84,28 @@ export class UserService {
     if (!user) throw new NotFoundUserException();
 
     const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const dateFormat = "yyyy-MM-dd:hh:mm:ss";
 
     await this.emailUtil.sendEmail(user.email, code);
     await this.redieUtil.set(
       user.email,
       JSON.stringify({
         code: code,
-        ttl: addMinutes(Date.now(), 10).toISOString(),
+        ttl: format(addMinutes(new Date(), 10), dateFormat)
       })
     );
   }
 
   async pwCodeCheck(pwCodeCheckDto: PwCodeCheckDto): Promise<void>{
+    const dateFormat = "yyyy-MM-dd:hh:mm:ss";
     const {email, code, password} = pwCodeCheckDto;
 
     const redisCode = await this.redieUtil.get(email);
     if(!redisCode) throw new NotFoundUserException();
 
     const parseRedisCode = JSON.parse(redisCode);
-    
-    if (parseRedisCode.code !== code || new Date() > new Date(parseRedisCode.ttl))
+
+    if (parseRedisCode.code !== code || new Date(format(new Date(), dateFormat)) > new Date(format(parseRedisCode.ttl, dateFormat)))
       throw new InvalidVerificationCodeException();
 
     const user: UserEntity = await this.userRepository.findOneBy({ email });
