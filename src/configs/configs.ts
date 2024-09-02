@@ -5,6 +5,7 @@ const dbConfig = config.get("db");
 const jwtConfig = config.get("jwt");
 const s3Config = config.get("s3");
 const emailConfig = config.get("email");
+const redisConfig = config.get("redis");
 //--------------------
 export const serverPort: string = serverConfig.port;
 
@@ -29,3 +30,8 @@ export const s3Arn: string = s3Config.arn;
 
 export const emailUser: string = emailConfig.user;
 export const emailPassword: string = emailConfig.password;
+
+export const redisHost: string = redisConfig.host;
+export const redisPort: number = redisConfig.port;
+export const redisUser: string = redisConfig.user;
+export const redisPassword: string = redisConfig.password;
