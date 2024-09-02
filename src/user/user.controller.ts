@@ -15,6 +15,7 @@ import { TokenResponseDto } from "./dto/response/token-response.dto";
 import { GetUser } from "src/common/decorator/get-user.decorator";
 import { UserEntity } from "./user.entity";
 import { AuthRefreshGuard } from "src/common/guard/auth-refresh.guard";
+import { PwCodeCheckDto } from "./dto/request/pw-code-check.dto";
 
 @Controller("auth")
 @UsePipes(ValidationPipe)
@@ -43,5 +44,10 @@ export class UserController {
   @Post("/pw-code")
   pwCode(@Body("email") email: string): Promise<void> {    
     return this.userService.pwCode(email);
+  }
+
+  @Post("/pw-code-check")
+  pwCodeCheck(@Body() pwCodeCheckDto: PwCodeCheckDto):Promise<void> {
+    return this.userService.pwCodeCheck(pwCodeCheckDto);
   }
 }
