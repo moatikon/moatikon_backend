@@ -90,7 +90,7 @@ export class UserService {
       user.email,
       JSON.stringify({
         code: code,
-        ttl: addMinutes(Date.now(), 1).toISOString(),
+        ttl: addMinutes(Date.now(), 10).toISOString(),
       })
     );
   }

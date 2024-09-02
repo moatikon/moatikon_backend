@@ -1,14 +1,11 @@
 import { Module } from "@nestjs/common";
 import { TokenUtilService } from "./token-util.service";
 import { JwtModule } from "@nestjs/jwt";
-import { jwtAccessExe, jwtSecret } from "src/configs/configs";
+import { jwtConfig } from "src/configs/jwt.config";
 
 @Module({
   imports: [
-    JwtModule.register({
-      secret: jwtSecret,
-      signOptions: { expiresIn: jwtAccessExe },
-    }),
+    JwtModule.register(jwtConfig),
   ],
   providers: [TokenUtilService],
   exports: [TokenUtilService]

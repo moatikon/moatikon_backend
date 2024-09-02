@@ -4,23 +4,17 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 import { Injectable } from "@nestjs/common";
-import {
-  s3AccessKey,
-  s3BucketName,
-  s3Region,
-  s3SecretAccessKey,
-} from "src/configs/configs";
+import { s3BucketName, s3Region } from "src/configs/configs";
+import { s3Config } from "src/configs/s3.config";
 import { v1 as uuid } from "uuid";
 
 @Injectable()
 export class S3UtilService {
-  s3Client: S3Client = new S3Client({
-    region: s3Region,
-    credentials: {
-      accessKeyId: s3AccessKey,
-      secretAccessKey: s3SecretAccessKey,
-    },
-  });
+  s3Client: S3Client;
+
+  constructor() {
+    this.s3Client = new S3Client(s3Config);
+  }
 
   #base64Encodeing(originalname: string): string {
     const buffer = Buffer.from(originalname + uuid(), "utf-8");
