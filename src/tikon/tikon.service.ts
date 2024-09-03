@@ -7,6 +7,7 @@ import { CreateTikonDto } from "./dto/create-tikon.dto";
 import { S3UtilService } from "src/util/s3/s3-util.service";
 import { NotPostOwnerException } from "src/exception/custom/not-post-owner.exception";
 import { TikonCategory } from "./dto/tikon-category.enum";
+import { TikonResponseDto } from "./dto/tikon-response.dto";
 
 @Injectable()
 export class TikonService {
@@ -16,8 +17,10 @@ export class TikonService {
     private s3Util: S3UtilService
   ) {}
 
-  async getAllMyTikons(user: UserEntity): Promise<TikonEntity[]> {
-    return await this.tikonRepository.findBy({ user });
+  async getAllMyTikons(user: UserEntity): Promise<TikonResponseDto> {
+    const tikons: TikonEntity[] = await this.tikonRepository.findBy({ user });
+
+    return new TikonResponseDto(tikons);
   }
 
   async createTikon(
@@ -25,7 +28,8 @@ export class TikonService {
     image: Express.Multer.File,
     createTikonDto: CreateTikonDto
   ): Promise<void> {
-    let { storeName, tikonName, category, finishedTikon, discount } = createTikonDto;
+    let { storeName, tikonName, category, finishedTikon, discount } =
+      createTikonDto;
     category = category.toUpperCase() as TikonCategory;
 
     const s3FileName: string = await this.s3Util.imageUploadToS3(image);
