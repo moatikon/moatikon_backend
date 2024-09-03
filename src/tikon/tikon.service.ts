@@ -3,11 +3,11 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { TikonEntity } from "./tikon.entity";
 import { Repository } from "typeorm";
 import { UserEntity } from "src/user/user.entity";
-import { CreateTikonDto } from "./dto/create-tikon.dto";
+import { CreateTikonDto } from "./dto/requeset/create-tikon.dto";
 import { S3UtilService } from "src/util/s3/s3-util.service";
 import { NotPostOwnerException } from "src/exception/custom/not-post-owner.exception";
 import { TikonCategory } from "./dto/tikon-category.enum";
-import { TikonResponseDto } from "./dto/tikon-response.dto";
+import { TikonResponseDto } from "./dto/response/tikon-response.dto";
 
 @Injectable()
 export class TikonService {

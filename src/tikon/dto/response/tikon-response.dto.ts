@@ -1,4 +1,4 @@
-import { TikonEntity } from "../tikon.entity";
+import { TikonEntity } from "../../tikon.entity";
 
 export class TikonResponseDto {
   tikons: TikonEntity[];
