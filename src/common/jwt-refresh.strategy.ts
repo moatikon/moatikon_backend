@@ -3,17 +3,18 @@ import { Strategy } from "passport-jwt";
 import { UserEntity } from "src/user/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm/repository/Repository";
-import { jwtReSecret } from "src/configs/configs";
 import { NotFoundException } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 
 export class JwtRefreshStrategy extends PassportStrategy(Strategy, "refresh") {
   constructor(
     @InjectRepository(UserEntity)
-    private userRepository: Repository<UserEntity>
+    private userRepository: Repository<UserEntity>,
+    private configService: ConfigService,
   ) {
     super({
       jwtFromRequest: (req) => req.headers["re-token"],
-      secretOrKey: jwtReSecret,
+      secretOrKey: configService.get<string>("JWT_RE_SECRET"),
     });
   }
 

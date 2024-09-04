@@ -4,16 +4,28 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 import { Injectable } from "@nestjs/common";
-import { s3BucketName, s3Region } from "src/configs/configs";
-import { s3Config } from "src/configs/s3.config";
+import { ConfigService } from "@nestjs/config";
 import { v1 as uuid } from "uuid";
 
 @Injectable()
 export class S3UtilService {
   s3Client: S3Client;
+  region = this.configService.get<string>("S3_REGION");
+  bucketName = this.configService.get<string>("S3_BUCKET_NAME");
 
-  constructor() {
-    this.s3Client = new S3Client(s3Config);
+  constructor(
+    private configService: ConfigService,
+
+    // private region = configService.get<string>("S3_REGION"),
+    // private bucketName = configService.get<string>("S3_BUCKET_NAME"),
+  ) {
+    this.s3Client = new S3Client({
+      region: this.region,
+      credentials: {
+        accessKeyId: configService.get<string>("S3_ACCESS_KEY"),
+        secretAccessKey: configService.get<string>("S3_SECRET_ACCESS_KEY"),
+      },
+    });
   }
 
   #base64Encodeing(originalname: string): string {
@@ -28,7 +40,7 @@ export class S3UtilService {
     const ext: string = image.mimetype.split("/")[1];
 
     const commend = new PutObjectCommand({
-      Bucket: s3BucketName,
+      Bucket: this.bucketName,
       Key: `${filename}.${ext}`,
       Body: image.buffer,
       ACL: "public-read-write",
@@ -36,14 +48,14 @@ export class S3UtilService {
     });
 
     this.s3Client.send(commend);
-    return `https://s3.${s3Region}.amazonaws.com/${s3BucketName}/${filename}.${ext}`;
+    return `https://s3.${this.region}.amazonaws.com/${this.bucketName}/${filename}.${ext}`;
   }
 
   async imageDeleteToS3(image: string): Promise<void> {
     const tikonImageKey = image.split("/")[4];
 
     const commend = new DeleteObjectsCommand({
-      Bucket: s3BucketName,
+      Bucket: this.bucketName,
       Delete: { Objects: [{ Key: tikonImageKey }] },
     });
 
