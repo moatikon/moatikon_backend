@@ -4,7 +4,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ExpiredTokenException } from 'src/exception/custom/expired-token.exception';
 import { InvalidTokenException } from 'src/exception/custom/invalid-token.exception';
 
-export class AuthAccessGuard extends AuthGuard('refresh') {
+export class AuthRefreshGuard extends AuthGuard('refresh') {
   handleRequest(
     err: any,
     user: any,
