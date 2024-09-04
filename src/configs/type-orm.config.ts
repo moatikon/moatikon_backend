@@ -10,6 +10,7 @@ export const typeORMConfig: TypeOrmModuleAsyncOptions = {
     username: config.get<string>("DB_USER"),
     password: config.get<string>("DB_PW"),
     database: config.get<string>("DB_DB"),
+    entities: [__dirname + '/../**/*.entity.{js,ts}'],
     synchronize: config.get<boolean>("DB_SYNCHRONIZE"),
   }),
 };
