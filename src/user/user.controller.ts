@@ -13,7 +13,7 @@ import { UserReqeustDto } from './dto/request/user-request.dto';
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Post('/signUp')
+  @Post('/signup')
   signUp(@Body() userReqeust: UserReqeustDto): Promise<void> {
     return this.userService.signUp(userReqeust);
   }
