@@ -20,7 +20,6 @@ import { UserEntity } from "src/user/user.entity";
 import { AuthAccessGuard } from "src/common/guard/auth-access.guard";
 import { TikonEntity } from "./tikon.entity";
 import { ImageInterceptor } from "../common/interceptor/image.interceptor";
-import { TikonResponseDto } from "./dto/tikon-response.dto";
 
 @Controller("tikon")
 @UsePipes(ValidationPipe)
@@ -29,7 +28,7 @@ export class TikonController {
   constructor(private tikonService: TikonService) {}
 
   @Get()
-  getAllMyTikons(@GetUser() user: UserEntity): Promise<TikonResponseDto> {
+  getAllMyTikons(@GetUser() user: UserEntity): Promise<TikonEntity[]> {
     return this.tikonService.getAllMyTikons(user);
   }
 
