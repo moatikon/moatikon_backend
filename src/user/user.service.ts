@@ -54,4 +54,12 @@ export class UserService {
 
     return new TokenResponseDto(accessToken, refreshToken);
   }
+
+  async reIssue(userEntity: UserEntity): Promise<TokenResponseDto> {
+    const { userid }: UserEntity = userEntity;
+    const accessToken: string = await this.tokenService.generateAccessToken(userid);
+    const refreshToken: string = await this.tokenService.generateRefreshToken(userid);
+
+    return new TokenResponseDto(accessToken, refreshToken);
+  }
 }
