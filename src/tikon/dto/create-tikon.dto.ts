@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty, Matches, Max, MAX, Min } from "class-validator";
-import { TikonCategory } from "../tikon-category.enum";
+import { TikonCategory } from "./tikon-category.enum";
 import { Transform } from "class-transformer";
 
 export class CreateTikonDto {

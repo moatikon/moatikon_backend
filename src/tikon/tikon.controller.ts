@@ -14,13 +14,13 @@ import {
   ValidationPipe,
 } from "@nestjs/common";
 import { TikonService } from "./tikon.service";
-import { CreateTikonDto } from "./dto/requeset/create-tikon.dto";
+import { CreateTikonDto } from "./dto/create-tikon.dto";
 import { GetUser } from "src/common/decorator/get-user.decorator";
 import { UserEntity } from "src/user/user.entity";
 import { AuthAccessGuard } from "src/common/guard/auth-access.guard";
 import { TikonEntity } from "./tikon.entity";
 import { ImageInterceptor } from "../common/interceptor/image.interceptor";
-import { TikonResponseDto } from "./dto/response/tikon-response.dto";
+import { TikonResponseDto } from "./dto/tikon-response.dto";
 
 @Controller("tikon")
 @UsePipes(ValidationPipe)
