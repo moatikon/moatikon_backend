@@ -5,12 +5,17 @@ import { Repository } from 'typeorm';
 import { UserReqeustDto } from './dto/request/user-request.dto';
 import * as bcrypt from 'bcryptjs';
 import { DuplicateUserException } from 'src/exception/custom/duplicate-user.exception';
+import { TokenResponseDto } from './dto/response/token-response.dto';
+import { UserNotFoundException } from 'src/exception/custom/user-not-found.exception';
+import { NotMatchedPWException } from 'src/exception/custom/not-matched-pw.exception';
+import { TokenService } from 'src/util/token/token.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
+    private tokenService: TokenService,
   ) {}
 
   async #hashPW(password: string): Promise<string> {
@@ -19,8 +24,8 @@ export class UserService {
     return hashedPW;
   }
 
-  async signUp(userReqeust: UserReqeustDto): Promise<void> {
-    const { email, password } = userReqeust;
+  async signup(userReqeust: UserReqeustDto): Promise<void> {
+    const { email, password }: UserReqeustDto = userReqeust;
 
     const user: UserEntity = await this.userRepository.findOneBy({ email });
     if (user) throw new DuplicateUserException();
@@ -33,5 +38,20 @@ export class UserService {
     });
 
     await this.userRepository.save(userEntity);
+  }
+
+  async signin(userRequest: UserReqeustDto): Promise<TokenResponseDto> {
+    const { email, password }: UserReqeustDto = userRequest;
+
+    const user: UserEntity = await this.userRepository.findOneBy({ email });
+    if (!user) throw new UserNotFoundException();
+
+    if (!(await bcrypt.compare(password, user.password)))
+      throw new NotMatchedPWException();
+
+    const accessToken: string = await this.tokenService.generateAccessToken(user.userid);
+    const refreshToken: string = await this.tokenService.generateRefreshToken(user.userid);
+
+    return new TokenResponseDto(accessToken, refreshToken);
   }
 }

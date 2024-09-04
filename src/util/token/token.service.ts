@@ -5,12 +5,12 @@ import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 export class TokenService {
   constructor(private jwtService: JwtService) {}
 
-  async generateAccessToken(userid: string): Promise<string> {
+  async generateAccessToken(userid: number): Promise<string> {
     const payload = { userid };
     return this.jwtService.sign(payload);
   }
 
-  async generateRefreshToken(userid: string): Promise<string> {
+  async generateRefreshToken(userid: number): Promise<string> {
     const payload = {userid};
     const option: JwtSignOptions = { secret: process.env.JWT_RE_SECRET, expiresIn: process.env.JWT_RE_EXE };
     return this.jwtService.sign(payload, option);
