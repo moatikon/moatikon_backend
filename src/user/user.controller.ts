@@ -14,6 +14,7 @@ import { AuthRefreshGuard } from 'src/common/guard/auth-refresh.guard';
 import { GetUser } from 'src/common/decorator/get-user.decorator';
 import { UserEntity } from './user.entity';
 import { CodeCheckRequestDto } from './dto/request/code-check-request.dto';
+import { EditPwRequestDto } from './dto/request/edit-pw-request.dto';
 
 @Controller('auth')
 @UsePipes(ValidationPipe)
@@ -41,8 +42,13 @@ export class UserController {
     return this.userService.pwCode(email);
   }
 
-  @Post('pw-code-check')
+  @Post('/pw-code-check')
   pwCodeCheck(@Body() codeCheckRequest: CodeCheckRequestDto): Promise<string> {
     return this.userService.pwCodeCheck(codeCheckRequest);
+  }
+
+  @Post('/edit-pw')
+  editPw(@Body() editPwRequest: EditPwRequestDto): Promise<void> {
+    return this.userService.editPw(editPwRequest);
   }
 }

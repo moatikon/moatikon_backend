@@ -12,8 +12,8 @@ import { TokenService } from 'src/util/token/token.service';
 import { MailService } from 'src/util/mail/mail.service';
 import { RedisUtilService } from 'src/util/redis/redis-util.service';
 import { InvalidCodeException } from 'src/exception/custom/invalid-code.exception';
-import { log } from 'console';
 import { CodeCheckRequestDto } from './dto/request/code-check-request.dto';
+import { EditPwRequestDto } from './dto/request/edit-pw-request.dto';
 
 @Injectable()
 export class UserService {
@@ -25,7 +25,7 @@ export class UserService {
     private redisService: RedisUtilService,
   ) {}
 
-  async #hasUser(email: string): Promise<UserEntity> {
+  async #getUserByEmail(email: string): Promise<UserEntity> {
     const user: UserEntity = await this.userRepository.findOneBy({ email });
     if (!user) throw new UserNotFoundException();
 
@@ -46,9 +46,7 @@ export class UserService {
 
     const hashedPW = await this.#hashPW(password);
     const userEntity: UserEntity = this.userRepository.create({
-      userid: null,
-      email,
-      password: hashedPW,
+      userid: null, email, password: hashedPW,
     });
 
     await this.userRepository.save(userEntity);
@@ -56,18 +54,12 @@ export class UserService {
 
   async signin(userRequest: UserReqeustDto): Promise<TokenResponseDto> {
     const { email, password }: UserReqeustDto = userRequest;
-    const user: UserEntity = await this.#hasUser(email);
+    const user: UserEntity = await this.#getUserByEmail(email);
 
-    if (!(await bcrypt.compare(password, user.password)))
-      throw new NotMatchedPWException();
+    if (!(await bcrypt.compare(password, user.password))) throw new NotMatchedPWException();
 
-    const accessToken: string = await this.tokenService.generateAccessToken(
-      user.userid,
-    );
-    const refreshToken: string = await this.tokenService.generateRefreshToken(
-      user.userid,
-    );
-
+    const accessToken: string = await this.tokenService.generateAccessToken( user.userid );
+    const refreshToken: string = await this.tokenService.generateRefreshToken( user.userid );
     return new TokenResponseDto(accessToken, refreshToken);
   }
 
@@ -88,7 +80,7 @@ export class UserService {
   }
 
   async pwCode(email: string): Promise<void> {
-    this.#hasUser(email);
+    await this.#getUserByEmail(email);
     const code: string = this.#generateCode();
 
     await this.mailService.sendCodeEmail(email, code);
@@ -104,6 +96,25 @@ export class UserService {
       console.log(successCode);
       await this.redisService.set(email, successCode, 6000);
       return successCode;
-    } else throw new InvalidCodeException();
+    } else {
+      throw new InvalidCodeException();
+    }
+  }
+
+  async editPw(editPwRequest: EditPwRequestDto): Promise<void> {
+    const { email, password, successCode } = editPwRequest;
+
+    const redisCode: string = await this.redisService.get(email);
+
+    if (
+      successCode == redisCode &&
+      redisCode.includes(process.env.CODE_CHECK_SECRET)
+    ) {
+      let user: UserEntity = await this.#getUserByEmail(email);
+      user.password = await this.#hashPW(password);
+      await this.userRepository.save(user);
+    } else {
+      throw new InvalidCodeException();
+    }
   }
 }
