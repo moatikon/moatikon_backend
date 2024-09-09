@@ -4,6 +4,7 @@ import { CommonModule } from './common/common.module';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeORMConfig } from './configs/type-orm.config';
+import { TikonModule } from './tikon/tikon.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { typeORMConfig } from './configs/type-orm.config';
     TypeOrmModule.forRootAsync(typeORMConfig),
     CommonModule,
     UserModule,
+    TikonModule,
   ],
   controllers: [],
   providers: [],
