@@ -11,6 +11,9 @@ import { NotMatchedPWException } from 'src/exception/custom/not-matched-pw.excep
 import { TokenService } from 'src/util/token/token.service';
 import { MailService } from 'src/util/mail/mail.service';
 import { RedisUtilService } from 'src/util/redis/redis-util.service';
+import { InvalidCodeException } from 'src/exception/custom/invalid-code.exception';
+import { log } from 'console';
+import { CodeCheckRequestDto } from './dto/request/code-check-request.dto';
 
 @Injectable()
 export class UserService {
@@ -21,6 +24,13 @@ export class UserService {
     private mailService: MailService,
     private redisService: RedisUtilService,
   ) {}
+
+  async #hasUser(email: string): Promise<UserEntity> {
+    const user: UserEntity = await this.userRepository.findOneBy({ email });
+    if (!user) throw new UserNotFoundException();
+
+    return user;
+  }
 
   async #hashPW(password: string): Promise<string> {
     const salt: string = await bcrypt.genSalt();
@@ -46,9 +56,7 @@ export class UserService {
 
   async signin(userRequest: UserReqeustDto): Promise<TokenResponseDto> {
     const { email, password }: UserReqeustDto = userRequest;
-
-    const user: UserEntity = await this.userRepository.findOneBy({ email });
-    if (!user) throw new UserNotFoundException();
+    const user: UserEntity = await this.#hasUser(email);
 
     if (!(await bcrypt.compare(password, user.password)))
       throw new NotMatchedPWException();
@@ -80,9 +88,22 @@ export class UserService {
   }
 
   async pwCode(email: string): Promise<void> {
+    this.#hasUser(email);
     const code: string = this.#generateCode();
 
     await this.mailService.sendCodeEmail(email, code);
     await this.redisService.set(email, code, 600);
+  }
+
+  async pwCodeCheck(codeCheckRequest: CodeCheckRequestDto): Promise<string> {
+    const { email, code } = codeCheckRequest;
+    const redisCode: string = await this.redisService.get(email);
+
+    if (code == redisCode) {
+      const successCode = process.env.CODE_CHECK_SECRET + this.#generateCode();
+      console.log(successCode);
+      await this.redisService.set(email, successCode, 6000);
+      return successCode;
+    } else throw new InvalidCodeException();
   }
 }

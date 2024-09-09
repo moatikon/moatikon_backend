@@ -13,6 +13,7 @@ import { TokenResponseDto } from './dto/response/token-response.dto';
 import { AuthRefreshGuard } from 'src/common/guard/auth-refresh.guard';
 import { GetUser } from 'src/common/decorator/get-user.decorator';
 import { UserEntity } from './user.entity';
+import { CodeCheckRequestDto } from './dto/request/code-check-request.dto';
 
 @Controller('auth')
 @UsePipes(ValidationPipe)
@@ -38,5 +39,10 @@ export class UserController {
   @Post('/pw-code')
   pwCode(@Body('email') email: string) {
     return this.userService.pwCode(email);
+  }
+
+  @Post('pw-code-check')
+  pwCodeCheck(@Body() codeCheckRequest: CodeCheckRequestDto): Promise<string> {
+    return this.userService.pwCodeCheck(codeCheckRequest);
   }
 }
