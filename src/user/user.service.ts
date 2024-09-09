@@ -10,6 +10,7 @@ import { UserNotFoundException } from 'src/exception/custom/user-not-found.excep
 import { NotMatchedPWException } from 'src/exception/custom/not-matched-pw.exception';
 import { TokenService } from 'src/util/token/token.service';
 import { MailService } from 'src/util/mail/mail.service';
+import { RedisUtilService } from 'src/util/redis/redis-util.service';
 
 @Injectable()
 export class UserService {
@@ -18,6 +19,7 @@ export class UserService {
     private userRepository: Repository<UserEntity>,
     private tokenService: TokenService,
     private mailService: MailService,
+    private redisService: RedisUtilService,
   ) {}
 
   async #hashPW(password: string): Promise<string> {
@@ -71,8 +73,16 @@ export class UserService {
     return new TokenResponseDto(accessToken, refreshToken);
   }
 
+  #generateCode(): string {
+    const numCode = Math.floor(Math.random() * 1000000);
+    const code = String(numCode).padStart(6, '0');
+    return code;
+  }
+
   async pwCode(email: string): Promise<void> {
-    const code: string = String(Math.floor(Math.random()*1000000)).padStart(6, "0");
+    const code: string = this.#generateCode();
+
     await this.mailService.sendCodeEmail(email, code);
+    await this.redisService.set(email, code, 600);
   }
 }
