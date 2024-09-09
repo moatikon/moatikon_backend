@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { TikonEntity } from 'src/tikon/tikon.entity';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Unique,
+} from 'typeorm';
 
 @Entity('user')
 @Unique(['email'])
@@ -11,4 +18,7 @@ export class UserEntity {
 
   @Column()
   password: string;
+
+  @OneToMany((type) => TikonEntity, (tikon) => tikon.user)
+  tikons: TikonEntity[];
 }
