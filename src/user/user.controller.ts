@@ -34,4 +34,9 @@ export class UserController {
   reIssue(@GetUser() user: UserEntity): Promise<TokenResponseDto> {
     return this.userService.reIssue(user);
   }
+
+  @Post('/pw-code')
+  pwCode(@Body('email') email: string) {
+    return this.userService.pwCode(email);
+  }
 }

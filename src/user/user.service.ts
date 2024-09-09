@@ -9,6 +9,7 @@ import { TokenResponseDto } from './dto/response/token-response.dto';
 import { UserNotFoundException } from 'src/exception/custom/user-not-found.exception';
 import { NotMatchedPWException } from 'src/exception/custom/not-matched-pw.exception';
 import { TokenService } from 'src/util/token/token.service';
+import { MailService } from 'src/util/mail/mail.service';
 
 @Injectable()
 export class UserService {
@@ -16,6 +17,7 @@ export class UserService {
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
     private tokenService: TokenService,
+    private mailService: MailService,
   ) {}
 
   async #hashPW(password: string): Promise<string> {
@@ -49,17 +51,28 @@ export class UserService {
     if (!(await bcrypt.compare(password, user.password)))
       throw new NotMatchedPWException();
 
-    const accessToken: string = await this.tokenService.generateAccessToken(user.userid);
-    const refreshToken: string = await this.tokenService.generateRefreshToken(user.userid);
+    const accessToken: string = await this.tokenService.generateAccessToken(
+      user.userid,
+    );
+    const refreshToken: string = await this.tokenService.generateRefreshToken(
+      user.userid,
+    );
 
     return new TokenResponseDto(accessToken, refreshToken);
   }
 
   async reIssue(userEntity: UserEntity): Promise<TokenResponseDto> {
     const { userid }: UserEntity = userEntity;
-    const accessToken: string = await this.tokenService.generateAccessToken(userid);
-    const refreshToken: string = await this.tokenService.generateRefreshToken(userid);
+    const accessToken: string =
+      await this.tokenService.generateAccessToken(userid);
+    const refreshToken: string =
+      await this.tokenService.generateRefreshToken(userid);
 
     return new TokenResponseDto(accessToken, refreshToken);
+  }
+
+  async pwCode(email: string): Promise<void> {
+    const code: string = String(Math.floor(Math.random()*1000000)).padStart(6, "0");
+    await this.mailService.sendCodeEmail(email, code);
   }
 }
