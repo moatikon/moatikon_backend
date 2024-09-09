@@ -1,11 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TikonEntity } from './tikon.entity';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { CreateTikonRequestDto } from './dto/request/create-tikon-request.dto';
 import { S3Service } from 'src/util/s3/s3.service';
 import { MissingImageException } from 'src/exception/custom/missing-image.exception';
 import { UserEntity } from 'src/user/user.entity';
+import { UnableToCompleteTikonException } from 'src/exception/custom/unable-to-complete-tikon.exception';
 
 @Injectable()
 export class TikonService {
@@ -40,5 +41,10 @@ export class TikonService {
       discount,
     });
     await this.tikonRepository.save(tikonEntity);
+  }
+
+  async completeTikon(user: UserEntity, id: number): Promise<void>{
+    const result: DeleteResult = await this.tikonRepository.delete({ id, user });
+    if(result.affected == 0) throw new UnableToCompleteTikonException();
   }
 }

@@ -1,7 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
+  Param,
   Post,
   UploadedFile,
   UseGuards,
@@ -24,11 +28,13 @@ export class TikonController {
   constructor(private tikonService: TikonService) {}
 
   @Get()
+  @HttpCode(HttpStatus.OK)
   getAllTikons(@GetUser() user: UserEntity): Promise<TikonEntity[]> {
     return this.tikonService.getAllTikons(user);
   }
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   @UseInterceptors(FileInterceptor('image'))
   createTikon(
     @GetUser() user: UserEntity,
@@ -36,5 +42,14 @@ export class TikonController {
     @Body() createTikonRequestDto: CreateTikonRequestDto,
   ): Promise<void> {
     return this.tikonService.createTikon(user, image, createTikonRequestDto);
+  }
+
+  @Delete('/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  completeTikon(
+    @GetUser() user: UserEntity,
+    @Param('id') id: number,
+  ): Promise<void> {
+    return this.tikonService.completeTikon(user, id);
   }
 }
