@@ -6,23 +6,4 @@ services:
     ports:
       - '3000:3000'
     env_file:
-      - .env  # Load environment variables from the .env file
-    depends_on:
-      - redis
-      - mysql
-
-  redis:
-    image: redis:alpine
-    command: redis-server --requirepass ${REDIS_PW}
-    ports:
-      - '6379:6379'
-
-  mysql:
-    image: mysql:8.0
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PW}
-      MYSQL_DATABASE: ${DB_DB}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PW}
-    ports:
-      - '3306:3306'
+      - .env
