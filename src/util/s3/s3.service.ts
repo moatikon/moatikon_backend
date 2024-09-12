@@ -33,9 +33,12 @@ export class S3Service {
     const filename = this.#base64Encodeing(image.filename);
     const ext: string = image.mimetype.split('/')[1];
 
+    const imageUrl:string = `https://s3.${this.config.get<string>('S3_REGION')}.amazonaws.com/${this.config.get<string>('S3_BUCKET')}/${filename}.${ext}`;
+    const imageKey:string = imageUrl.split('/')[4];
+
     const commend = new PutObjectCommand({
       Bucket: this.config.get<string>('S3_BUCKET'),
-      Key: `${filename}.${ext}`,
+      Key: imageKey,
       Body: image.buffer,
       ACL: "public-read-write",
       ContentType: image.mimetype,
@@ -45,15 +48,15 @@ export class S3Service {
     if(uploadFileS3.$metadata.httpStatusCode != 200){
       throw new BadRequestException("S3 File Upload Fail")
     }
-    return `https://s3.${this.config.get<string>('S3_REGION')}.amazonaws.com/${this.config.get<string>('S3_BUCKET')}/${filename}.${ext}`;
+    return imageUrl;
   }
 
   async imageDeleteToS3(image: string): Promise<void> {
-    const tikonImageKey = image.split('/')[4];
+    const imageKey:string = image.split('/')[4];
 
     const commend = new DeleteObjectsCommand({
       Bucket: this.config.get<string>('S3_BUCKET'),
-      Delete: { Objects: [{ Key: tikonImageKey }] },
+      Delete: { Objects: [{ Key: imageKey }] },
     });
 
     await this.s3Client.send(commend);
