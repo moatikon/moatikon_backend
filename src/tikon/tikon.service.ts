@@ -48,12 +48,9 @@ export class TikonService {
 
   async completeTikon(user: UserEntity, id: number): Promise<void> {
     const tikon: TikonEntity = await this.tikonRepository.findOneBy({ id });
-    
-    await this.s3Service.imageDeleteToS3(tikon.image);
-    const result: DeleteResult = await this.tikonRepository.delete({
-      id,
-      user,
-    });
+  
+    const result: DeleteResult = await this.tikonRepository.delete({ id,user });
     if (result.affected == 0) throw new UnableToCompleteTikonException();
+    await this.s3Service.imageDeleteToS3(tikon.image);
   }
 }
