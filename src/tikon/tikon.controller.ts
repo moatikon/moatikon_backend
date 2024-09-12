@@ -17,9 +17,9 @@ import { AuthAccessGuard } from 'src/common/guard/auth-access.guard';
 import { TikonService } from './tikon.service';
 import { CreateTikonRequestDto } from './dto/request/create-tikon-request.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { TikonEntity } from './tikon.entity';
 import { GetUser } from 'src/common/decorator/get-user.decorator';
 import { UserEntity } from 'src/user/user.entity';
+import { TikonsResponseDto } from './dto/response/tikons_response.dto';
 
 @Controller('tikon')
 @UsePipes(ValidationPipe)
@@ -29,7 +29,7 @@ export class TikonController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  getAllTikons(@GetUser() user: UserEntity): Promise<TikonEntity[]> {
+  getAllTikons(@GetUser() user: UserEntity): Promise<TikonsResponseDto> {
     return this.tikonService.getAllTikons(user);
   }
 

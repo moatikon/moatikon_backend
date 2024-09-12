@@ -7,6 +7,7 @@ import { S3Service } from 'src/util/s3/s3.service';
 import { MissingImageException } from 'src/exception/custom/missing-image.exception';
 import { UserEntity } from 'src/user/user.entity';
 import { UnableToCompleteTikonException } from 'src/exception/custom/unable-to-complete-tikon.exception';
+import { TikonsResponseDto } from './dto/response/tikons_response.dto';
 
 @Injectable()
 export class TikonService {
@@ -16,8 +17,10 @@ export class TikonService {
     private s3Service: S3Service,
   ) {}
 
-  async getAllTikons(user: UserEntity): Promise<TikonEntity[]> {
-    return await this.tikonRepository.findBy({ user });
+  async getAllTikons(user: UserEntity): Promise<TikonsResponseDto> {
+    const tikons: TikonEntity[] = await this.tikonRepository.findBy({ user });
+
+    return new TikonsResponseDto(tikons);
   }
 
   async createTikon(
@@ -43,8 +46,11 @@ export class TikonService {
     await this.tikonRepository.save(tikonEntity);
   }
 
-  async completeTikon(user: UserEntity, id: number): Promise<void>{
-    const result: DeleteResult = await this.tikonRepository.delete({ id, user });
-    if(result.affected == 0) throw new UnableToCompleteTikonException();
+  async completeTikon(user: UserEntity, id: number): Promise<void> {
+    const result: DeleteResult = await this.tikonRepository.delete({
+      id,
+      user,
+    });
+    if (result.affected == 0) throw new UnableToCompleteTikonException();
   }
 }
