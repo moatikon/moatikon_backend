@@ -12,13 +12,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - name: ssh to ec2
-        uses: appleboy/ssh-action@master
+      - name: Deploy to EC2
+        uses: ssh -i ${{ secrets.SSH_PRIVATE_KEY }} ec2-user@43.203.91.114 -p 22
         with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }} # 내가 변수로 저장한 pem key
-          host: ${{ secrets.HOST }} # 내가 변수로 저장한 ip
-          username: ${{ secrets.USER }} # 내가 변수로 저장한 User
           script: |
             cd moatikon_backend/
             git pull
