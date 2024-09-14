@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -29,8 +30,8 @@ export class TikonController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  getAllTikons(@GetUser() user: UserEntity): Promise<TikonsResponseDto> {
-    return this.tikonService.getAllTikons(user);
+  getAllTikons(@GetUser() user: UserEntity, @Query('page') page: number = 0): Promise<TikonsResponseDto> {
+    return this.tikonService.getAllTikons(user, page);
   }
 
   @Post()

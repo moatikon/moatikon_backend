@@ -17,8 +17,15 @@ export class TikonService {
     private s3Service: S3Service,
   ) {}
 
-  async getAllTikons(user: UserEntity): Promise<TikonsResponseDto> {
-    const tikons: TikonEntity[] = await this.tikonRepository.findBy({ user });
+  async getAllTikons(user: UserEntity, page: number): Promise<TikonsResponseDto> {
+    let take = 5;
+
+    const [tikons, li]: [TikonEntity[], number] =
+      await this.tikonRepository.findAndCount({
+        where: { user },
+        take: take,
+        skip: take * page,
+      });
 
     return new TikonsResponseDto(tikons);
   }
