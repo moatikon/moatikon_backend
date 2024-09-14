@@ -1,9 +1,9 @@
 export class TokenResponseDto {
   accessToken: string;
-  refreshToken: string;
+  reffreshToken: string;
 
   constructor(accessToken: string, refreshToken: string) {
     this.accessToken = accessToken;
-    this.refreshToken = refreshToken;
+    this.reffreshToken = refreshToken;
   }
 }
