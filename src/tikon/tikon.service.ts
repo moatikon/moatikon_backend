@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TikonEntity } from './tikon.entity';
 import { DeleteResult, Repository } from 'typeorm';
@@ -8,6 +8,8 @@ import { MissingImageException } from 'src/exception/custom/missing-image.except
 import { UserEntity } from 'src/user/user.entity';
 import { UnableToCompleteTikonException } from 'src/exception/custom/unable-to-complete-tikon.exception';
 import { TikonsResponseDto } from './dto/response/tikons_response.dto';
+import { FcmService } from 'src/util/fcm/fcm.service';
+import {v1 as uuid} from 'uuid';
 
 @Injectable()
 export class TikonService {
@@ -15,6 +17,7 @@ export class TikonService {
     @InjectRepository(TikonEntity)
     private tikonRepository: Repository<TikonEntity>,
     private s3Service: S3Service,
+    private fcmService: FcmService,
   ) {}
 
   async getAllTikons(user: UserEntity, page: number): Promise<TikonsResponseDto> {
@@ -35,7 +38,7 @@ export class TikonService {
     image: Express.Multer.File,
     createTikonRequest: CreateTikonRequestDto,
   ): Promise<void> {
-    const { storeName, tikonName, category, finishedTikon, discount } =
+    const { storeName, tikonName, category, finishedTikon, discount, deviceToken } =
       createTikonRequest;
     if (!image) throw new MissingImageException();
 
@@ -50,6 +53,15 @@ export class TikonService {
       finishedTikon,
       discount,
     });
+    
+    await this.fcmService.cronFcm(
+      uuid(),
+      finishedTikon,
+      deviceToken,
+      '모아티콘 기프티콘 만료알림',
+      `${tikonName}이 오늘이면 만료됩니다. 서둘러 사용해 주세요!`,
+    );
+
     await this.tikonRepository.save(tikonEntity);
   }
 

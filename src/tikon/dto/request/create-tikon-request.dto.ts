@@ -22,4 +22,7 @@ export class CreateTikonRequestDto {
 
   @IsNotEmpty({ message: '할인율을 설정해주세요.' })
   discount: number;
+
+  @IsNotEmpty({ message: 'diviceToken은 비어있으면 안됩니다.'})
+  deviceToken: string
 }

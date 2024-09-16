@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { CronJob } from 'cron';
-import { formatISO } from 'date-fns';
 import * as admin from 'firebase-admin';
 import { Message } from 'firebase-admin/lib/messaging/messaging-api';
-import {v1 as uuid} from 'uuid';
 
 @Injectable()
 export class FcmService {
@@ -39,12 +37,12 @@ export class FcmService {
     return result;
   }
 
-  async cronFcm(date: string, token: string, title: string, message: string):Promise<void>{
+  async cronFcm(name:string, date: string, token: string, title: string, message: string):Promise<void>{
     const job = new CronJob(new Date(date), async () => {
       await this.fcm(token, title, message);
     });
 
-    this.schedulerRegistry.addCronJob(uuid(), job);
+    this.schedulerRegistry.addCronJob(name, job);
     job.start();
   }
 }
