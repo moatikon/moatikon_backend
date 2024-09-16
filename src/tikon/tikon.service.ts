@@ -21,7 +21,7 @@ export class TikonService {
   ) {}
 
   async getAllTikons(user: UserEntity, page: number): Promise<TikonsResponseDto> {
-    let take = 5;
+    let take = 15;
 
     const [tikons, li]: [TikonEntity[], number] =
       await this.tikonRepository.findAndCount({
