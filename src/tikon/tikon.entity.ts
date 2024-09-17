@@ -1,11 +1,11 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
 import { TikonCategory } from './enum/tikon-category.enum';
 import { UserEntity } from 'src/user/user.entity';
 
 @Entity('tikon')
 export class TikonEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn()
+  id: string;
 
   @Column()
   image: string;

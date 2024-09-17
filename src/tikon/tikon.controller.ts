@@ -45,11 +45,11 @@ export class TikonController {
     return this.tikonService.createTikon(user, image, createTikonRequestDto);
   }
 
-  @Delete('/:id')
+  @Delete()
   @HttpCode(HttpStatus.NO_CONTENT)
   completeTikon(
     @GetUser() user: UserEntity,
-    @Param('id') id: number,
+    @Query('id') id: string,
   ): Promise<void> {
     return this.tikonService.completeTikon(user, id);
   }
