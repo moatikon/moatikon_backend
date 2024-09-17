@@ -29,8 +29,6 @@ export class CustomImageInterceptor implements NestInterceptor {
 
       // 여기서 resolve, reject로 판별
       single(req, res, (err) => {
-        console.log(req);
-        
         if (err) {
           // 여기서 Custom하게 Exception을 설정할 수 있다.
           reject(new MissingImageException());
