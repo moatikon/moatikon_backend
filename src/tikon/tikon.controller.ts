@@ -17,10 +17,10 @@ import {
 import { AuthAccessGuard } from 'src/common/guard/auth-access.guard';
 import { TikonService } from './tikon.service';
 import { CreateTikonRequestDto } from './dto/request/create-tikon-request.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { GetUser } from 'src/common/decorator/get-user.decorator';
 import { UserEntity } from 'src/user/user.entity';
 import { TikonsResponseDto } from './dto/response/tikons_response.dto';
+import { ImageInterceptor } from 'src/common/interceptor/image.interceptor';
 
 @Controller('tikon')
 @UsePipes(ValidationPipe)
@@ -36,7 +36,7 @@ export class TikonController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(ImageInterceptor('image'))
   createTikon(
     @GetUser() user: UserEntity,
     @UploadedFile() image: Express.Multer.File,
