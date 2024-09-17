@@ -3,12 +3,11 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import { CronJob } from 'cron';
 import * as admin from 'firebase-admin';
 import { Message } from 'firebase-admin/lib/messaging/messaging-api';
+import { JobNotFoundException } from 'src/exception/custom/job-not-found.exception';
 
 @Injectable()
 export class FcmService {
-  constructor(
-    private schedulerRegistry: SchedulerRegistry
-  ) {
+  constructor(private schedulerRegistry: SchedulerRegistry) {
     admin.initializeApp({
       credential: admin.credential.cert({
         projectId: process.env.FB_PROJECT_ID,
@@ -18,7 +17,7 @@ export class FcmService {
     });
   }
 
-  async fcm(token: string, title: string, message: string):Promise<string> {
+  async fcm(token: string, title: string, message: string): Promise<string> {
     const payload: Message = {
       token: token,
       notification: {
@@ -37,12 +36,27 @@ export class FcmService {
     return result;
   }
 
-  async cronFcm(name:string, date: string, token: string, title: string, message: string):Promise<void>{
+  async cronFcm(
+    name: string,
+    date: string,
+    token: string,
+    title: string,
+    message: string,
+  ): Promise<void> {
     const job = new CronJob(new Date(date), async () => {
       await this.fcm(token, title, message);
     });
 
     this.schedulerRegistry.addCronJob(name, job);
     job.start();
+  }
+
+  async cronStopFcm(name: string): Promise<void> {
+    try {
+      const job = this.schedulerRegistry.getCronJob(name);
+      job.stop();
+    } catch (_) {
+      throw new JobNotFoundException();
+    }
   }
 }

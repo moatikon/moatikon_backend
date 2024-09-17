@@ -11,7 +11,6 @@ import { TikonsResponseDto } from './dto/response/tikons_response.dto';
 import { FcmService } from 'src/util/fcm/fcm.service';
 import { v4 as uuid } from 'uuid';
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { JobNotFoundException } from 'src/exception/custom/job-not-found.exception';
 
 @Injectable()
 export class TikonService {
@@ -71,14 +70,8 @@ export class TikonService {
 
   async completeTikon(user: UserEntity, id: string): Promise<void> {
     const tikon: TikonEntity = await this.tikonRepository.findOneBy({ id });
-
-    try {
-      const job = this.schedulerRegistry.getCronJob(id);
-      job.stop();
-    } catch (_) {
-      throw new JobNotFoundException();
-    }
   
+    await this.fcmService.cronStopFcm(id);
     const result: DeleteResult = await this.tikonRepository.delete({ id, user });
     if (result.affected == 0) throw new UnableToCompleteTikonException();
     await this.s3Service.imageDeleteToS3(tikon.image);
