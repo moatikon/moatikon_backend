@@ -9,8 +9,9 @@ import { UserEntity } from 'src/user/user.entity';
 import { UnableToCompleteTikonException } from 'src/exception/custom/unable-to-complete-tikon.exception';
 import { TikonsResponseDto } from './dto/response/tikons_response.dto';
 import { FcmService } from 'src/util/fcm/fcm.service';
-import {v4 as uuid} from 'uuid';
+import { v4 as uuid } from 'uuid';
 import { SchedulerRegistry } from '@nestjs/schedule';
+import { JobNotFoundException } from 'src/exception/custom/job-not-found.exception';
 
 @Injectable()
 export class TikonService {
@@ -71,8 +72,12 @@ export class TikonService {
   async completeTikon(user: UserEntity, id: string): Promise<void> {
     const tikon: TikonEntity = await this.tikonRepository.findOneBy({ id });
 
-    const job = this.schedulerRegistry.getCronJob(id);
-    job.stop();
+    try {
+      const job = this.schedulerRegistry.getCronJob(id);
+      job.stop();
+    } catch (_) {
+      throw new JobNotFoundException();
+    }
   
     const result: DeleteResult = await this.tikonRepository.delete({ id, user });
     if (result.affected == 0) throw new UnableToCompleteTikonException();
