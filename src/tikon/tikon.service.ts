@@ -9,7 +9,8 @@ import { UserEntity } from 'src/user/user.entity';
 import { UnableToCompleteTikonException } from 'src/exception/custom/unable-to-complete-tikon.exception';
 import { TikonsResponseDto } from './dto/response/tikons_response.dto';
 import { FcmService } from 'src/util/fcm/fcm.service';
-import {v1 as uuid} from 'uuid';
+import {v4 as uuid} from 'uuid';
+import { SchedulerRegistry } from '@nestjs/schedule';
 
 @Injectable()
 export class TikonService {
@@ -18,6 +19,7 @@ export class TikonService {
     private tikonRepository: Repository<TikonEntity>,
     private s3Service: S3Service,
     private fcmService: FcmService,
+    private schedulerRegistry: SchedulerRegistry
   ) {}
 
   async getAllTikons(user: UserEntity, page: number): Promise<TikonsResponseDto> {
@@ -38,13 +40,14 @@ export class TikonService {
     image: Express.Multer.File,
     createTikonRequest: CreateTikonRequestDto,
   ): Promise<void> {
-    const { storeName, tikonName, category, finishedTikon, discount, deviceToken } =
-      createTikonRequest;
+    const { storeName, tikonName, category, finishedTikon, discount, deviceToken } = createTikonRequest;
     if (!image) throw new MissingImageException();
+
+    const name: string = uuid();
 
     const imagePath: string = await this.s3Service.imageUpload(image);
     const tikonEntity: TikonEntity = this.tikonRepository.create({
-      id: null,
+      id: name,
       user: user,
       image: imagePath,
       storeName,
@@ -55,7 +58,7 @@ export class TikonService {
     });
     
     await this.fcmService.cronFcm(
-      uuid(),
+      name,
       finishedTikon,
       deviceToken,
       '모아티콘 기프티콘 만료알림',
@@ -65,10 +68,13 @@ export class TikonService {
     await this.tikonRepository.save(tikonEntity);
   }
 
-  async completeTikon(user: UserEntity, id: number): Promise<void> {
+  async completeTikon(user: UserEntity, id: string): Promise<void> {
     const tikon: TikonEntity = await this.tikonRepository.findOneBy({ id });
+
+    const job = this.schedulerRegistry.getCronJob(id);
+    job.stop();
   
-    const result: DeleteResult = await this.tikonRepository.delete({ id,user });
+    const result: DeleteResult = await this.tikonRepository.delete({ id, user });
     if (result.affected == 0) throw new UnableToCompleteTikonException();
     await this.s3Service.imageDeleteToS3(tikon.image);
   }
