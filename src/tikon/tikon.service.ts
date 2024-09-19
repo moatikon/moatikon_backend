@@ -10,7 +10,6 @@ import { UnableToCompleteTikonException } from 'src/exception/custom/unable-to-c
 import { TikonsResponseDto } from './dto/response/tikons_response.dto';
 import { FcmService } from 'src/util/fcm/fcm.service';
 import { v4 as uuid } from 'uuid';
-import { SchedulerRegistry } from '@nestjs/schedule';
 
 @Injectable()
 export class TikonService {
@@ -19,7 +18,6 @@ export class TikonService {
     private tikonRepository: Repository<TikonEntity>,
     private s3Service: S3Service,
     private fcmService: FcmService,
-    private schedulerRegistry: SchedulerRegistry
   ) {}
 
   async getAllTikons(user: UserEntity, page: number): Promise<TikonsResponseDto> {

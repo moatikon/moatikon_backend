@@ -40,6 +40,7 @@ jobs:
             cd moatikon_backend/
             git pull
             docker compose up -d --build
+            sudo docker rmi $(sudo docker images -f "dangling=true" -q) --force
       
     # 보안그룹 제거하기
     - name: Remove Gihub Actinos IP to Security group
