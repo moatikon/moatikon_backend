@@ -1,5 +1,5 @@
 # 내가 사용하는 node version
-FROM node:22.4-alpine
+FROM node:22.9-alpine
 
 # Set working directory
 WORKDIR /app
