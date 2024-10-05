@@ -100,7 +100,7 @@ export class TikonService {
   async completeTikon(user: UserEntity, id: string): Promise<void> {
     const tikon: TikonEntity = await this.tikonRepository.findOneBy({ id });
 
-    if (new Date(tikon.finishedTikon) < new Date()) {
+    if (new Date(tikon.finishedTikon) > new Date()) {
       try {
         const job = this.schedulerRegistry.getCronJob(id);
         job.stop();
