@@ -1,8 +1,8 @@
 import { ExecutionContext } from '@nestjs/common';
 import { TokenExpiredError } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
-import { ExpiredTokenException } from 'src/exception/custom/expired-token.exception';
-import { InvalidTokenException } from 'src/exception/custom/invalid-token.exception';
+import { ExpiredTokenException } from '../../exception/custom/expired-token.exception';
+import { InvalidTokenException } from '../../exception/custom/invalid-token.exception';
 
 export class AuthAccessGuard extends AuthGuard('access') {
   handleRequest(

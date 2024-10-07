@@ -1,7 +1,7 @@
 import { CallHandler, ExecutionContext, NestInterceptor } from "@nestjs/common";
 import * as multer from "multer";
 import { Observable } from "rxjs";
-import { MissingImageException } from "src/exception/custom/missing-image.exception";
+import { MissingImageException } from "../../exception/custom/missing-image.exception";
 
 // fieldName을 받기 위한 function
 export function ImageInterceptor(fieldName: string): NestInterceptor {

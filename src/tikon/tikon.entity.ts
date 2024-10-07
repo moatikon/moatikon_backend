@@ -1,6 +1,6 @@
 import { Column, Entity, ManyToOne, PrimaryColumn } from 'typeorm';
 import { TikonCategory } from './enum/tikon-category.enum';
-import { UserEntity } from 'src/user/user.entity';
+import { UserEntity } from '../user/user.entity';
 
 @Entity('tikon')
 export class TikonEntity {

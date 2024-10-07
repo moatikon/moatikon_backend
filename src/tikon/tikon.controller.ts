@@ -5,7 +5,6 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Param,
   Post,
   Query,
   UploadedFile,
@@ -14,13 +13,13 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { AuthAccessGuard } from 'src/common/guard/auth-access.guard';
+import { AuthAccessGuard } from '../common/guard/auth-access.guard';
 import { TikonService } from './tikon.service';
 import { CreateTikonRequestDto } from './dto/request/create-tikon-request.dto';
-import { GetUser } from 'src/common/decorator/get-user.decorator';
-import { UserEntity } from 'src/user/user.entity';
+import { GetUser } from '../common/decorator/get-user.decorator';
+import { UserEntity } from '../user/user.entity';
 import { TikonsResponseDto } from './dto/response/tikons_response.dto';
-import { ImageInterceptor } from 'src/common/interceptor/image.interceptor';
+import { ImageInterceptor } from '../common/interceptor/image.interceptor';
 
 @Controller('tikon')
 @UsePipes(ValidationPipe)

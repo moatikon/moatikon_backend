@@ -3,16 +3,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { TikonEntity } from './tikon.entity';
 import { DeleteResult, Repository } from 'typeorm';
 import { CreateTikonRequestDto } from './dto/request/create-tikon-request.dto';
-import { S3Service } from 'src/util/s3/s3.service';
-import { MissingImageException } from 'src/exception/custom/missing-image.exception';
-import { UserEntity } from 'src/user/user.entity';
-import { UnableToCompleteTikonException } from 'src/exception/custom/unable-to-complete-tikon.exception';
+import { S3Service } from '../util/s3/s3.service';
+import { MissingImageException } from '../exception/custom/missing-image.exception';
+import { UserEntity } from '../user/user.entity';
+import { UnableToCompleteTikonException } from '../exception/custom/unable-to-complete-tikon.exception';
 import { TikonsResponseDto } from './dto/response/tikons_response.dto';
-import { FcmService } from 'src/util/fcm/fcm.service';
+import { FcmService } from '../util/fcm/fcm.service';
 import { v4 as uuid } from 'uuid';
 import { CronJob } from 'cron';
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { JobNotFoundException } from 'src/exception/custom/job-not-found.exception';
+import { JobNotFoundException } from '../exception/custom/job-not-found.exception';
 import { addDays } from 'date-fns';
 
 @Injectable()

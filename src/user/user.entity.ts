@@ -1,4 +1,4 @@
-import { TikonEntity } from 'src/tikon/tikon.entity';
+import { TikonEntity } from '../tikon/tikon.entity';
 import {
   Column,
   Entity,
