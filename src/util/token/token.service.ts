@@ -1,9 +1,13 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 
 @Injectable()
 export class TokenService {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+  ) {}
 
   async generateAccessToken(userid: number): Promise<string> {
     const payload = { userid };
@@ -11,8 +15,15 @@ export class TokenService {
   }
 
   async generateRefreshToken(userid: number): Promise<string> {
-    const payload = {userid};
-    const option: JwtSignOptions = { secret: process.env.JWT_RE_SECRET, expiresIn: process.env.JWT_RE_EXE };
+    const payload = { userid };
+    const option: JwtSignOptions = {
+      secret: this.configService.get<string>('JWT_RE_SECRET'),
+      expiresIn: this.configService.get<string>('JWT_RE_EXE'),
+    };
+
+    console.log(this.configService.get<string>('JWT_RE_SECRET'));
+    
+
     return this.jwtService.sign(payload, option);
   }
 }
