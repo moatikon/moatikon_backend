@@ -44,6 +44,7 @@
     "firebase-admin": "^12.5.0",
     "handlebars": "^4.7.8",
     "ioredis": "^5.4.1",
+    "joi": "^17.13.3",
     "mysql2": "^3.11.0",
     "nodemailer": "^6.9.15",
     "passport": "^0.7.0",
@@ -93,7 +94,9 @@
       "**/*.(t|j)s"
     ],
     "coveragePathIgnorePatterns": [
-      "module.ts", "dto.ts", "entity.ts"
+      "module.ts",
+      "dto.ts",
+      "entity.ts"
     ],
     "coverageDirectory": "./coverage",
     "testEnvironment": "node",
