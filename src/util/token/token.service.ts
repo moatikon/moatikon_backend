@@ -21,9 +21,6 @@ export class TokenService {
       expiresIn: this.configService.get<string>('JWT_RE_EXE'),
     };
 
-    console.log(this.configService.get<string>('JWT_RE_SECRET'));
-    
-
     return this.jwtService.sign(payload, option);
   }
 }
