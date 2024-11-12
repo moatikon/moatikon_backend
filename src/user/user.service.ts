@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './user.entity';
 import { Repository } from 'typeorm';
 import { UserReqeustDto } from './dto/request/user-request.dto';
-import * as bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcrypt';
 import { DuplicateUserException } from 'src/exception/custom/duplicate-user.exception';
 import { TokenResponseDto } from './dto/response/token-response.dto';
 import { UserNotFoundException } from 'src/exception/custom/user-not-found.exception';
@@ -14,6 +14,7 @@ import { RedisUtilService } from 'src/util/redis/redis-util.service';
 import { InvalidCodeException } from 'src/exception/custom/invalid-code.exception';
 import { CodeCheckRequestDto } from './dto/request/code-check-request.dto';
 import { EditPwRequestDto } from './dto/request/edit-pw-request.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
@@ -23,16 +24,17 @@ export class UserService {
     private tokenService: TokenService,
     private mailService: MailService,
     private redisService: RedisUtilService,
+    private configService: ConfigService,
   ) {}
 
-  async #getUserByEmail(email: string): Promise<UserEntity> {
+  async getUserByEmail(email: string): Promise<UserEntity> {
     const user: UserEntity = await this.userRepository.findOneBy({ email });
     if (!user) throw new UserNotFoundException();
 
     return user;
   }
 
-  async #hashPW(password: string): Promise<string> {
+  async hashPW(password: string): Promise<string> {
     const salt: string = await bcrypt.genSalt();
     const hashedPW: string = await bcrypt.hash(password, salt);
     return hashedPW;
@@ -44,9 +46,10 @@ export class UserService {
     const user: UserEntity = await this.userRepository.findOneBy({ email });
     if (user) throw new DuplicateUserException();
 
-    const hashedPW = await this.#hashPW(password);
+    const hashedPW = await this.hashPW(password);
     const userEntity: UserEntity = this.userRepository.create({
-      userid: null, email, password: hashedPW,
+      email,
+      password: hashedPW,
     });
 
     await this.userRepository.save(userEntity);
@@ -54,12 +57,17 @@ export class UserService {
 
   async signin(userRequest: UserReqeustDto): Promise<TokenResponseDto> {
     const { email, password }: UserReqeustDto = userRequest;
-    const user: UserEntity = await this.#getUserByEmail(email);
+    const user: UserEntity = await this.getUserByEmail(email);
 
-    if (!(await bcrypt.compare(password, user.password))) throw new NotMatchedPWException();
+    if (!(await bcrypt.compare(password, user.password)))
+      throw new NotMatchedPWException();
 
-    const accessToken: string = await this.tokenService.generateAccessToken( user.userid );
-    const refreshToken: string = await this.tokenService.generateRefreshToken( user.userid );
+    const accessToken: string = await this.tokenService.generateAccessToken(
+      user.userid,
+    );
+    const refreshToken: string = await this.tokenService.generateRefreshToken(
+      user.userid,
+    );
     return new TokenResponseDto(accessToken, refreshToken);
   }
 
@@ -73,15 +81,17 @@ export class UserService {
     return new TokenResponseDto(accessToken, refreshToken);
   }
 
-  #generateCode(): string {
+  generateCode(): string {
     const numCode = Math.floor(Math.random() * 1000000);
     const code = String(numCode).padStart(6, '0');
     return code;
   }
 
   async pwCode(email: string): Promise<void> {
-    await this.#getUserByEmail(email);
-    const code: string = this.#generateCode();
+    const user: UserEntity = await this.userRepository.findOneBy({ email });
+    if (!user) throw new UserNotFoundException();
+
+    const code: string = this.generateCode();
 
     await this.mailService.sendCodeEmail(email, code);
     await this.redisService.set(email, code, 600);
@@ -92,8 +102,9 @@ export class UserService {
     const redisCode: string = await this.redisService.get(email);
 
     if (code == redisCode) {
-      const successCode = process.env.CODE_CHECK_SECRET + this.#generateCode();
-      console.log(successCode);
+      const successCode =
+        this.configService.get<string>('CODE_CHECK_SECRET') +
+        this.generateCode();
       await this.redisService.set(email, successCode, 6000);
       return successCode;
     } else {
@@ -108,10 +119,10 @@ export class UserService {
 
     if (
       successCode == redisCode &&
-      redisCode.includes(process.env.CODE_CHECK_SECRET)
+      redisCode.includes(this.configService.get<string>('CODE_CHECK_SECRET'))
     ) {
-      let user: UserEntity = await this.#getUserByEmail(email);
-      user.password = await this.#hashPW(password);
+      let user: UserEntity = await this.getUserByEmail(email);
+      user.password = await this.hashPW(password);
       await this.userRepository.save(user);
     } else {
       throw new InvalidCodeException();
