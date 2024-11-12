@@ -17,7 +17,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:token": "jest --testPathPattern=src/util/token --coverage --collectCoverageFrom=src/util/token/**",
+    "test:token:watch": "jest --watch --testPathPattern=src/util/token --coverage --collectCoverageFrom=src/util/token/**"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.645.0",
@@ -80,7 +82,9 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "roots": [
+      "src"
+    ],
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
@@ -88,7 +92,13 @@
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "coveragePathIgnorePatterns": [
+      "module.ts", "dto.ts", "entity.ts"
+    ],
+    "coverageDirectory": "./coverage",
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "src/(.*)": "<rootDir>/src/$1"
+    }
   }
 }
